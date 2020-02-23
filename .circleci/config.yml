@@ -6,7 +6,11 @@ workflows:
     jobs:
 
       - build
+      - deploy_production:
 
+        requires:
+
+          - build
 jobs:
   build:
     docker:
@@ -18,4 +22,15 @@ jobs:
 
       - checkout
       - run: yarn install
-      - run: yarn test
+      - run: yarn tests
+  deploy_production:
+    environment:
+      HEROKU_APP_NAME: workshop-cloud
+    executor: heroku/default
+    steps:
+
+      - checkout
+      - heroku/install
+      - heroku/deploy-via-git:
+
+          only-branch: master
